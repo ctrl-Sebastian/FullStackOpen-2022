@@ -38,7 +38,7 @@ const App = () => {
   const highestVoteCount = Math.max(...allVotes)
   const winnerIndex = allVotes.indexOf(highestVoteCount)
   const winner = anecdotes[winnerIndex]
-
+  
   return (
     <div>
       <Header name="Anecdote of the day"/>

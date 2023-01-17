@@ -1,5 +1,5 @@
-import { useState } from 'react'
-
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 const Person = ({ person }) => {
   return (
       <li>{person.name} {person.number}</li>
@@ -13,11 +13,25 @@ const App = () => {
     { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
     { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [filter, setFilter] = useState(true)
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [filter, setFilter] = useState(true);
 
-  let personsToShow = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+  
+  const hook =  () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled');
+        setPersons(response.data);
+      })
+  }
+  useEffect(hook, [])
+  
+  console.log('render', persons.length, 'notes');
+
+  let personsToShow = persons.filter(person => person.name.toString().toLowerCase().includes(filter.toString().toLowerCase()));
 
   const addPerson = (event) => {
     event.preventDefault()

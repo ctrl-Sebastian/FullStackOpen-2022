@@ -1,15 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Country = ({ country }) => {
-  return (
-    <div>
-      <h3>{country.name.common}</h3>
-    </div>
-  )
-}
-
-const ShowResults = ({countriesToShow}) => {
+const ShowResults = ({countriesToShow, setFilter}) => {
   if (countriesToShow.length === 1){
     const country = countriesToShow[0];
     return(
@@ -28,7 +20,14 @@ const ShowResults = ({countriesToShow}) => {
     )
   } 
   if (countriesToShow.length > 10) return <div><h3>Too many matches, specify another filter</h3></div>
-  return countriesToShow.map(country => <Country key={country.name.common} country={country} />)
+  return countriesToShow.map(country => {
+    return (
+      <div key={country.name.common}>
+        <h3>{country.name.common}</h3>
+        <button value={country.name.common} onClick={(event) => setFilter(event.target.value)}>Show</button>
+      </div>
+    )
+  })
 }
 
 const App = () => {
@@ -46,11 +45,9 @@ const App = () => {
       })
   }
   useEffect(hook, [])
-  
   console.log('rendered', countries.length, 'countries');
 
   let countriesToShow = countries.filter(country => country.name.common.toString().toLowerCase().includes(filter.toString().toLowerCase()));
-    
   const handleFilterChange = (event) => {       
     setFilter(event.target.value)  
   }
@@ -68,7 +65,7 @@ const App = () => {
         />
       </div>
 
-    <ShowResults countriesToShow={countriesToShow}/>
+    <ShowResults countriesToShow={countriesToShow} setFilter={setFilter}/>
     </div>
   )
 }

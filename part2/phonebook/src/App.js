@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import personService from './components/persons'
 import axios from 'axios'
+
 const Person = ({ person }) => {
   return (
       <li>{person.name} {person.number}</li>
@@ -10,7 +12,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
-  const [filter, setFilter] = useState(true);
+  const [filter, setFilter] = useState('');
 
   
   const hook =  () => {
@@ -28,6 +30,14 @@ const App = () => {
 
   let personsToShow = persons.filter(person => person.name.toString().toLowerCase().includes(filter.toString().toLowerCase()));
 
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+  }, [])
+
   const addPerson = (event) => {
     event.preventDefault()
     const personObject = {
@@ -35,14 +45,25 @@ const App = () => {
       number: newNumber,
     }
     
-    if(persons.find(person => person.name === newName)){
-      alert(`${newName} is already added to phonebook`)
-    } else {
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
-    }
+    personService
+    .create(personObject)
+    .then(returnedPerson => {
+      if(persons.find(person => person.name === newName)){
+        alert(`${newName} is already added to phonebook`)
+      } else {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      }
+    })
+
+
   }
+
+  const removePerson = (id) => {
+    
+  }
+
   const handleNameChange = (event) => {       
     setNewName(event.target.value)  
   }
@@ -59,6 +80,8 @@ const App = () => {
 
       <div>
         Filter shown with: <input 
+          type="text"
+          placeholder = "Filter phonebook"
           value={filter}
           onChange={handleFilterChange}
         />

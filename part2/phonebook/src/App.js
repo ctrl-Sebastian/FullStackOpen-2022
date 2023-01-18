@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import personService from './components/persons'
 import axios from 'axios'
 
-const Person = ({ person }) => {
+const Person = ({ person, removePerson }) => {
   return (
-      <li>{person.name} {person.number}</li>
+      <li>{person.name} {person.number} <button onClick={() => removePerson(person.id)}>Remove</button></li>
   )
 }
 
@@ -40,17 +40,29 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
+
     const personObject = {
       name: newName,
       number: newNumber,
     }
     
+    let existingPerson = persons.find(person => person.name === newName)
+
     personService
     .create(personObject)
     .then(returnedPerson => {
-      if(persons.find(person => person.name === newName)){
-        alert(`${newName} is already added to phonebook`)
-      } else {
+      if(persons.find(person => person.name === newName))
+      {
+        if (window.confirm("Do you want to update existing contact?")) {
+          personService.update(existingPerson.id, personObject).then(returnedPerson => {
+            setPersons(persons.map(person => person.id === returnedPerson.id ? returnedPerson : person))
+            setNewName('')
+            setNewNumber('')
+        })
+        }
+      } 
+      else 
+      {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
@@ -61,7 +73,16 @@ const App = () => {
   }
 
   const removePerson = (id) => {
-    
+    let personToRemove = persons.find(person => person.id === id)
+    if (window.confirm("Do you really want to delete contact?")) {
+        console.log("delete", id)
+        personService.remove(id).then(response => {
+            setPersons(persons.filter(person => person.id !== id))
+        }).catch(response => {
+            setPersons(persons.filter(person => person.id !== id))
+            console.log(response)
+        })
+    }
   }
 
   const handleNameChange = (event) => {       
@@ -87,10 +108,6 @@ const App = () => {
         />
       </div>
 
-      <div>filter: {filter}</div>
-      <div>newName: {newName}</div>
-      <div>newNumber: {newNumber}</div>
-
       <h3>Add a new</h3>
 
       <form onSubmit={addPerson}>
@@ -114,7 +131,7 @@ const App = () => {
       <h3>Numbers</h3>
       <ul>
       {personsToShow.map(person => 
-          <Person key={person.name} person={person} />
+          <Person key={person.name} person={person} removePerson={removePerson}/>
         )}
       </ul>
     </div>

@@ -50,7 +50,7 @@ const App = () => {
 
     if(persons.find(person => person.name === newName))
       {
-        if (window.confirm("Do you want to update existing contact?")) {
+        if (window.confirm(`'${existingPerson.name}' is already added to phonebook, replace the old number with a new one?`)) {
           personService.update(existingPerson.id, personObject).then(returnedPerson => {
             setPersons(persons.map(person => person.id === returnedPerson.id ? returnedPerson : person))
             setNewName('')
@@ -98,7 +98,7 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
 
       <div>
         Filter shown with: <input 

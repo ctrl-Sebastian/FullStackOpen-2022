@@ -48,10 +48,7 @@ const App = () => {
     
     let existingPerson = persons.find(person => person.name === newName)
 
-    personService
-    .create(personObject)
-    .then(returnedPerson => {
-      if(persons.find(person => person.name === newName))
+    if(persons.find(person => person.name === newName))
       {
         if (window.confirm("Do you want to update existing contact?")) {
           personService.update(existingPerson.id, personObject).then(returnedPerson => {
@@ -60,17 +57,21 @@ const App = () => {
             setNewNumber('')
         })
         }
+        return
       } 
-      else 
-      {
-        setPersons(persons.concat(returnedPerson))
+      
+    personService.create(personObject)
+    .then(returnedPerson => {
         setNewName('')
         setNewNumber('')
-      }
-    })
+        console.log("returned person", returnedPerson)
+        setPersons(persons.concat(returnedPerson))
 
-
-  }
+  setNewName('')
+  setNewNumber('')
+      
+})
+}
 
   const removePerson = (id) => {
     let personToRemove = persons.find(person => person.id === id)

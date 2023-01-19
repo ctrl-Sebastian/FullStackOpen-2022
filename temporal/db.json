@@ -21,13 +21,13 @@
     {
       "content": "Hello",
       "date": "2023-01-18T03:17:17.788Z",
-      "important": false,
+      "important": true,
       "id": 4
     },
     {
       "content": "Good night!",
       "date": "2023-01-18T03:21:28.784Z",
-      "important": false,
+      "important": true,
       "id": 5
     },
     {

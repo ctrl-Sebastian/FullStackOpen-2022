@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import axios from 'axios'
+import './index.css'
 import App from './App'
 
 axios
@@ -9,10 +10,7 @@ axios
     const notes = response.data
     ReactDOM.createRoot(document.getElementById('root')).render(<App />)
   })
-
-
-
-
+  
 const notes = [
   {
     id: 1,

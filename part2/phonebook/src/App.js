@@ -8,11 +8,27 @@ const Person = ({ person, removePerson }) => {
   )
 }
 
+const Notification = ({ message, type }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className={type}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+
+  const [notifMessage, setNotifMessage] = useState('')
+  const [messageType, setMessageType] = useState('')
+
 
   
   const hook =  () => {
@@ -22,6 +38,8 @@ const App = () => {
       .then(response => {
         console.log('promise fulfilled');
         setPersons(response.data);
+      }) .catch(error => {
+        console.log('fail')
       })
   }
   useEffect(hook, [])
@@ -53,6 +71,17 @@ const App = () => {
         if (window.confirm(`'${existingPerson.name}' is already added to phonebook, replace the old number with a new one?`)) {
           personService.update(existingPerson.id, personObject).then(returnedPerson => {
             setPersons(persons.map(person => person.id === returnedPerson.id ? returnedPerson : person))
+
+            setMessageType('success')
+            setNotifMessage(
+              `Updated '${newName}''s number`
+            )
+            setTimeout(() => {
+              setNotifMessage(null)
+            }, 5000).catch(error => {
+              console.log('fail')
+          })
+
             setNewName('')
             setNewNumber('')
         })
@@ -62,13 +91,24 @@ const App = () => {
       
     personService.create(personObject)
     .then(returnedPerson => {
-        setNewName('')
-        setNewNumber('')
-        console.log("returned person", returnedPerson)
-        setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNumber('')
+      console.log("returned person", returnedPerson)
+      setPersons(persons.concat(returnedPerson))
 
-  setNewName('')
-  setNewNumber('')
+      setMessageType('success')
+      setNotifMessage(
+        `Added '${newName}'`
+      )
+      setTimeout(() => {
+        setNotifMessage(null)
+      }, 5000).catch(error => {
+        console.log('fail')
+    })
+
+      setNewName('')
+      setNewNumber('')
+
       
 })
 }
@@ -79,9 +119,30 @@ const App = () => {
         console.log("delete", id)
         personService.remove(id).then(response => {
             setPersons(persons.filter(person => person.id !== id))
+
+          setMessageType('success')
+          setNotifMessage(
+            `Removed '${personToRemove.name}'`
+          )
+          setTimeout(() => {
+            setNotifMessage(null)
+          }, 5000).catch(error => {
+            console.log('fail')
+        })
+
         }).catch(response => {
             setPersons(persons.filter(person => person.id !== id))
             console.log(response)
+            
+            if (response.response.status === 404) {
+              setMessageType('error')
+              setNotifMessage(
+                  `${personToRemove.name} has already been removed`
+              )
+              setTimeout(() => {
+                  setNotifMessage(null)
+              }, 5000)
+          }
         })
     }
   }
@@ -99,6 +160,8 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+
+      <Notification message={notifMessage} type={messageType}/>
 
       <div>
         Filter shown with: <input 

@@ -82,35 +82,37 @@ const App = () => {
               console.log('fail')
           })
 
-            setNewName('')
-            setNewNumber('')
+            setNewName('');
+            setNewNumber('');
         })
         }
         return
       } 
       
-    personService.create(personObject)
-    .then(returnedPerson => {
-      setNewName('')
-      setNewNumber('')
-      console.log("returned person", returnedPerson)
-      setPersons(persons.concat(returnedPerson))
+    personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setNewName('')
+        setNewNumber('')
+        console.log("returned person", returnedPerson)
+        setPersons(persons.concat(returnedPerson))
 
-      setMessageType('success')
-      setNotifMessage(
-        `Added '${newName}'`
-      )
-      setTimeout(() => {
-        setNotifMessage(null)
-      }, 5000).catch(error => {
-        console.log('fail')
-    })
+        setMessageType('success')
+        setNotifMessage(`Added '${newName}'`);
+        setTimeout(() => {
+          setNotifMessage(null)
+        }, 5000);
 
-      setNewName('')
-      setNewNumber('')
-
-      
-})
+      setNewName('');
+      setNewNumber('');
+      })
+      .catch(error => {
+        setMessageType('error');
+        setNotifMessage(error.response.data.error);
+        setTimeout(() => {
+          setNotifMessage(null)
+        }, 5000);
+      })
 }
 
   const removePerson = (id) => {
@@ -151,7 +153,7 @@ const App = () => {
     setNewName(event.target.value)  
   }
   const handleNumberChange = (event) => {       
-    setNewNumber(event.target.value)  
+    setNewNumber(event.target.value);
   }
   const handleFilterChange = (event) => {       
     setFilter(event.target.value)  

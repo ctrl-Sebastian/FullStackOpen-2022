@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Among us?",
+    "title": "Blog para luego editar",
     "author": "Sebastian Marrera",
     "url": "example-url",
-    "likes": 0
+    "likes": 5
 }

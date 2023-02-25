@@ -1,8 +1,8 @@
-PUT http://localhost:3003/api/blogs/63ead62f3db09327485d99ad
+PUT http://localhost:3003/api/blogs/63f59661c7072f520fcc2ff2
 Content-Type: application/json
 
 {
-    "title": "Blog para borrar luego",
+    "title": "Blog editado",
     "author": "Sebastian Marrera",
     "url": "example-url",
     "likes": 10

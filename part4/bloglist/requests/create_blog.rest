@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNhbGliYW4iLCJpZCI6IjYzZjgyYmE1ZGNlNmFlOTUwNDVlZGJhNyIsImlhdCI6MTY3NzI4MTE5OSwiZXhwIjoxNjc3Mjg0Nzk5fQ.LrHnUiHaPl_shkL-UDuGp2mO1xp7DW24jAdypxWGgrY
 Content-Type: application/json
 
 {
-    "title": "Blog para luego editar",
+    "title": "Blog de Caliban luego de refactorizar la obtencion del token",
     "author": "Sebastian Marrera",
     "url": "example-url",
-    "likes": 5
+    "likes": 15
 }

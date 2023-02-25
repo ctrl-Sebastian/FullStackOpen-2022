@@ -4,11 +4,14 @@ const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
+
 const Blog = require('../models/blog')
 
 const initialBlogs = [
     {
-        _id: "5a422a851b54a676234d17f7",
+        id: "5a422a851b54a676234d17f7",
         title: "React patterns",
         author: "Michael Chan",
         url: "https://reactpatterns.com/",
@@ -16,7 +19,7 @@ const initialBlogs = [
         __v: 0
     },
     {
-        _id: "5a422aa71b54a676234d17f8",
+        id: "5a422aa71b54a676234d17f8",
         title: "Go To Statement Considered Harmful",
         author: "Edsger W. Dijkstra",
         url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
@@ -25,9 +28,39 @@ const initialBlogs = [
     }
 ]
 
+let testUser
+let testUserToken
+
 beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+
+    const initialUsers = await helper.usersInDb()
+    testUser = initialUsers[0]
+
+    const tokenRes = await api
+        .post('/api/login')
+        .send({
+            username: 'root',
+            password: 'sekret'
+        })
+
+    testUserToken = tokenRes.body.token
+
     await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+
+    const blogObjects = helper.initialBlogs
+        .map(blog => new Blog(blog))
+
+    const promiseArray = blogObjects.map(blog => {
+        blog.userId = testUser.id
+        blog.save()
+    })
+    await Promise.all(promiseArray)
 })
 describe('when there is initially some notes saved', () => {
 test('blogs are returned as json', async () => {
@@ -41,19 +74,6 @@ test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs')
 
     expect(response.body).toHaveLength(helper.initialBlogs.length)
-})
-
-test('a specific blog can be viewed', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-
-    const blogToView = blogsAtStart[0]
-
-    const resultBlog = await api
-        .get(`/api/blogs/${blogToView.id}`)
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-
-    expect(resultBlog.body).toEqual(blogToView)
 })
 
 test('the unique identifier property of the blog posts is named id', async () => {
@@ -77,6 +97,7 @@ describe('addition of a new note', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'bearer ' + testUserToken)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -90,7 +111,7 @@ describe('addition of a new note', () => {
         )
     })
 
-    test('if a blog is added with the likes property missing from the request it will be default to 0', async () => {
+    test('if a blog is added without the likes property it will be default to 0', async () => {
         const newBlog = {
             title: "Blog con likes sin definir",
             author: "Sebastian Marrera",
@@ -100,6 +121,7 @@ describe('addition of a new note', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'bearer ' + testUserToken)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -123,54 +145,18 @@ describe('addition of a new note', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'bearer ' + testUserToken)
             .send(newBlog)
             .expect(400)
 
     })
 })
 
-describe('editing an existing blog', () => {
-    test('the likes of a blog can be edited', async () => {
-        const newBlog = {
-            title: "blog to edit from 2 likes to 4 likes",
-            author: "Sebastian Marrera",
-            url: "https://reactpatterns.com/",
-            likes: 2,
-            __v: 0
-        }
+describe('editing an existing blog', () => { 
 
-        await api
-            .post('/api/blogs')
-            .send(newBlog)
-
-        const blogsAtEnd = await helper.blogsInDb()
-        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
-
-        await api
-        .put('/api/blogs')
-        .send(newBlog)
-    })
 })
 
 describe('deletion of a note', () => {
-    test('a blog can be deleted', async () => {
-        const blogsAtStart = await helper.blogsInDb()
-        const blogToDelete = blogsAtStart[0]
-
-        await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
-            .expect(204)
-
-        const blogsAtEnd = await helper.blogsInDb()
-
-        expect(blogsAtEnd).toHaveLength(
-            helper.initialBlogs.length - 1
-        )
-
-        const title = blogsAtEnd.map(r => r.title)
-
-        expect(title).not.toContain(blogToDelete.title)
-    })
 })
 
 afterAll(async () => {

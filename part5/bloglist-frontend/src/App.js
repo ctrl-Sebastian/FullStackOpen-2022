@@ -1,188 +1,138 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+
 import Blog from './components/Blog'
+import LoginForm from './components/Login'
+import BlogForm from './components/BlogForm'
+import Toggleable from './components/Toggleable'
+
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const Notification = ({ message, type }) => {
-  if (message === null) {
-    return null
-  }
-  return (
-    <div className={type}>
-      {message}
-    </div>
-  )
+    if (message === null) {
+        return null
+    }
+    return (
+        <div className={type}>
+            {message}
+        </div>
+    )
 }
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
+    const [blogs, setBlogs] = useState([])
 
-  const [notifMessage, setNotifMessage] = useState('')
-  const [messageType, setMessageType] = useState('')
+    const [notifMessage, setNotifMessage] = useState('')
+    const [messageType, setMessageType] = useState('')
 
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [user, setUser] = useState(null)
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+    const blogFormRef = useRef()
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogsappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+    useEffect(() => {
+        blogService.getAll().then(blogs =>
+            setBlogs( blogs )
+        )
+    }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem('loggedBlogsappUser')
+        if (loggedUserJSON) {
+            const user = JSON.parse(loggedUserJSON)
+            setUser(user)
+            blogService.setToken(user.token)
+        }
+    }, [])
 
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
+    const handleLogin = async (event) => {
+        event.preventDefault()
 
-      window.localStorage.setItem(
-        'loggedBlogsappUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
+        try {
+            const user = await loginService.login({
+                username, password,
+            })
 
-      setMessageType('error')
-      setNotifMessage(
-        `Wrong credentials`
-      )
-      setTimeout(() => {
-        setNotifMessage(null)
-      }, 5000).catch(error => {
-        console.log('fail')
-    })
-    }
+            window.localStorage.setItem(
+                'loggedBlogsappUser', JSON.stringify(user)
+            )
+            blogService.setToken(user.token)
+            setUser(user)
+            setUsername('')
+            setPassword('')
+        } catch (exception) {
 
-  }
+            setMessageType('error')
+            setNotifMessage(
+                'Wrong credentials'
+            )
+            setTimeout(() => {
+                setNotifMessage(null)
+            }, 5000).catch(error => {
+                console.log(error)
+            })
+        }
 
-  const handleLogout = async (event) => {
-    window.localStorage.removeItem('loggedBlogsappUser')
-    window.location.reload()
-  }
-  
-
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value)
-  }
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value)
-  }
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value)
-  }
-  
-
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
     }
 
-    blogService
-      .create(blogObject)
-        .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
-      })
+    const handleLogout = async () => {
+        window.localStorage.removeItem('loggedBlogsappUser')
+        window.location.reload()
+    }
 
-    setMessageType('success')
-      setNotifMessage(
-        `A new blog '${newTitle}' by ${newAuthor}`
-      )
-      setTimeout(() => {
-        setNotifMessage(null)
-      }, 5000).catch(error => {
-        console.log('fail')
-    })
-  }
+    const addBlog = (blogObject) => {
+        blogFormRef.current.toggleVisibility()
+        blogService
+            .create(blogObject)
+            .then(returnedBlog => {
+                setBlogs(blogs.concat(returnedBlog))
+            })
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-    <div>
-      username
-        <input
-        type="text"
-        value={username}
-        name="Username"
-        onChange={({ target }) => setUsername(target.value)}
-      />
-    </div>
-    <div>
-      password
-        <input
-        type="password"
-        value={password}
-        name="Password"
-        onChange={({ target }) => setPassword(target.value)}
-      />
-    </div>
-    <button type="submit">login</button>
-    </form>
-  )
+        setMessageType('success')
+        setNotifMessage(
+            `A new blog '${blogObject.title}' by ${blogObject.author}`
+        )
+        setTimeout(() => {
+            setNotifMessage(null)
+        }, 5000).catch(error => {
+            console.log(error)
+        })
+    }
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-
-      Title: <input
-        value={newTitle}
-        onChange={handleTitleChange}
-      />
-
-      Author: <input
-        value={newAuthor}
-        onChange={handleAuthorChange}
-      />
-
-      Url: <input
-        value={newUrl}
-        onChange={handleUrlChange}
-      />
-
-      <button type="submit">save</button>
-    </form>  
-  )
-
-  return (
-    <div>
-      <h1>Blogs app</h1>
-
-      <Notification message={notifMessage} type={messageType}/>
-
-      {user === null ?
-        loginForm() :
+    return (
         <div>
-          <p>{user.name} logged in<button onClick={handleLogout}>log out</button></p>
-          {blogForm()}
-        </div>
-      }
+            <h1>Blogs app</h1>
 
-      <h2>blogs</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
-  )
+            <Notification message={notifMessage} type={messageType}/>
+
+            {user === null ?
+                <Toggleable buttonLabel='login'>
+                    <LoginForm
+                        username={username}
+                        password={password}
+                        handleUsernameChange={({ target }) => setUsername(target.value)}
+                        handlePasswordChange={({ target }) => setPassword(target.value)}
+                        handleSubmit={handleLogin}
+                    />
+                </Toggleable> :
+                <div>
+                    <p>{user.name} logged in<button onClick={handleLogout}>log out</button></p>
+
+                    <Toggleable buttonLabel="new blog" ref={blogFormRef}>
+                        <BlogForm createBlog={addBlog}/>
+                    </Toggleable>
+
+                </div>
+            }
+
+            <h2>blogs</h2>
+            {blogs.sort((b1, b2) => b2.likes - b1.likes).map(blog =>
+                <Blog key={blog.id} blog={blog} user={user} />
+            )}
+        </div>
+    )
 }
 
 export default App

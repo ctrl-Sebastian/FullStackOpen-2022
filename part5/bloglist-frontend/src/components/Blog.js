@@ -35,11 +35,11 @@ const Blog = ( { blog, user } ) => {
         <div className="blog" onClick={rules}>
             {blog.title} {blog.author}
             <Toggleable buttonLabel='view'>
-              Url: {blog.url} <br></br>
+                Url: {blog.url} <br></br>
 
-              likes: {blog.likes} <button onClick={increaseLikes}>Like</button><br></br>
+                likes: {blog.likes} <button onClick={increaseLikes}>Like</button><br></br>
 
-              Username: {blog.user.username} <br></br>
+                Username: {blog.user.username} <br></br>
                 <button style={hideWhenNotOwned} onClick={remove}>Remove</button>
             </Toggleable>
         </div>

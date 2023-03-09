@@ -37,7 +37,7 @@ const Blog = ( { blog, user } ) => {
             <Toggleable buttonLabel='view'>
                 Url: {blog.url} <br></br>
 
-                Likes: {blog.likes} <button onClick={increaseLikes}>Like</button><br></br>
+                Likes: {blog.likes} <button id="like-button" onClick={increaseLikes}>Like</button><br></br>
 
                 Username: {blog.user.name} <br></br>
                 <button style={hideWhenNotOwned} onClick={remove}>Remove</button>

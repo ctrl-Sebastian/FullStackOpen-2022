@@ -70,9 +70,7 @@ const App = () => {
             )
             setTimeout(() => {
                 setNotifMessage(null)
-            }, 5000).catch(error => {
-                console.log(error)
-            })
+            }, 5000)
         }
 
     }
@@ -90,15 +88,14 @@ const App = () => {
                 setBlogs(blogs.concat(returnedBlog))
             })
 
+
         setMessageType('success')
         setNotifMessage(
             `A new blog '${blogObject.title}' by ${blogObject.author}`
         )
         setTimeout(() => {
             setNotifMessage(null)
-        }, 5000).catch(error => {
-            console.log(error)
-        })
+        }, 5000)
     }
 
     return (
@@ -108,7 +105,7 @@ const App = () => {
             <Notification message={notifMessage} type={messageType}/>
 
             {user === null ?
-                <Toggleable buttonLabel='login'>
+                <Toggleable buttonLabel='log in'>
                     <LoginForm
                         username={username}
                         password={password}

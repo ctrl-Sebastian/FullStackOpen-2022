@@ -1,5 +1,5 @@
-import Anecdotes from "./components/Anecdotes"
-import NewAnecdote from "./components/NewAnecdote"
+import Anecdotes from "./components/AnecdoteList"
+import NewAnecdote from "./components/AnecdoteForm"
 
 const App = () => {
 

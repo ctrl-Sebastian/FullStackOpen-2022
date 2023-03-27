@@ -1,26 +1,66 @@
 import { useState } from 'react'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link,
+  useParams, useNavigate
+} from 'react-router-dom'
+
+const Notification = ({ notification }) => {
+  const style = {
+    border: 'solid',
+    borderColor: 'red',
+    padding: 10,
+    borderWidth: 3,
+    margin: 5
+  }
+
+	if (notification === '') {
+		return <div></div>
+	} else {
+		return <div style={style}>{notification}</div>
+	}
+}
 
 const Menu = () => {
   const padding = {
     paddingRight: 5
   }
   return (
+      <div>
+        <Link style={padding} to="/">anecdotes</Link>
+        <Link style={padding} to="/create">create new</Link>
+        <Link style={padding} to="/about">about</Link>
+      </div>
+
+  )
+}
+
+const Anecdote = ({ anecdotes }) => {
+  const id = useParams().id
+  const anecdote = anecdotes.find(n => n.id === Number(id)) 
+  return (
     <div>
-      <a href='#' style={padding}>anecdotes</a>
-      <a href='#' style={padding}>create new</a>
-      <a href='#' style={padding}>about</a>
+      <h2>{anecdote.content}</h2>
+      <div>{anecdote.author}</div>
     </div>
   )
 }
 
-const AnecdoteList = ({ anecdotes }) => (
-  <div>
+const AnecdoteList = ({ anecdotes }) => {
+  const id = useParams().id
+  return(
+    <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote =>
+        <li key={anecdote.id} >
+          <Link to={`/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
+      )}
     </ul>
   </div>
-)
+  )
+}
 
 const About = () => (
   <div>
@@ -40,11 +80,13 @@ const Footer = () => (
   <div>
     Anecdote app for <a href='https://fullstackopen.com/'>Full Stack Open</a>.
 
-    See <a href='https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js'>https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js</a> for the source code.
+    See <a href='https://github.com/ctrl-Sebastian/FullStackOpen-2022/tree/main/part7/routed-anecdotes'>https://github.com/ctrl-Sebastian/FullStackOpen-2022/tree/main/part7/routed-anecdotes</a> for the source code.
   </div>
 )
 
 const CreateNew = (props) => {
+  const navigate = useNavigate()
+
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
@@ -58,6 +100,9 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    props.setNotification(`New anecdote: '${content}' added`)
+    setTimeout(() => props.setNotification(''), 5000)
+    navigate('/')
   }
 
   return (
@@ -121,16 +166,23 @@ const App = () => {
 
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
-
   return (
-    <div>
-      <h1>Software anecdotes</h1>
-      <Menu />
-      <AnecdoteList anecdotes={anecdotes} />
-      <About />
-      <CreateNew addNew={addNew} />
-      <Footer />
-    </div>
+    
+    <Router>
+      <div>
+        <h1>Software anecdotes</h1>
+        <Menu />
+        <Notification notification={notification} />
+        <Routes>
+          <Route path="/:id" element={<Anecdote anecdotes={anecdotes} />} />
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route path="/create" element={<CreateNew addNew={addNew} setNotification={setNotification}/>} />
+          <Route path="/about" element={<About /> }/>
+        </Routes>
+
+        <Footer />
+      </div>
+    </Router>
   )
 }
 

@@ -185,8 +185,8 @@ const App = () => {
 
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
+
   return (
-    
     <Router>
       <div>
         <h1>Software anecdotes</h1>

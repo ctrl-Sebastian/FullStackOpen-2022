@@ -1,0 +1,32 @@
+h1{
+color: rgb(34, 100, 155);
+font-style: italic;
+}
+
+.success{
+    color: green;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.blog{
+    margin-bottom: 10px;
+    padding: 5px;
+    border-style: double;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px rgb(32, 32, 32);
+}

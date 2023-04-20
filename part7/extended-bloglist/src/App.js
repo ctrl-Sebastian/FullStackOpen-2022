@@ -4,27 +4,17 @@ import Blog from './components/Blog'
 import LoginForm from './components/Login'
 import BlogForm from './components/BlogForm'
 import Toggleable from './components/Toggleable'
-
+import Notification from './components/Notification'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-const Notification = ({ message, type }) => {
-    if (message === null) {
-        return null
-    }
-    return (
-        <div className={type}>
-            {message}
-        </div>
-    )
-}
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
+    const dispatch = useDispatch()
     const [blogs, setBlogs] = useState([])
-
-    const [notifMessage, setNotifMessage] = useState('')
-    const [messageType, setMessageType] = useState('')
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -64,13 +54,7 @@ const App = () => {
             setPassword('')
         } catch (exception) {
 
-            setMessageType('error')
-            setNotifMessage(
-                'Wrong credentials'
-            )
-            setTimeout(() => {
-                setNotifMessage(null)
-            }, 5000)
+            dispatch(setNotification('Wrong credentials', 5))
         }
 
     }
@@ -88,22 +72,14 @@ const App = () => {
                 setBlogs(blogs.concat(returnedBlog))
             })
 
-
-        setMessageType('success')
-        setNotifMessage(
-            `A new blog '${blogObject.title}' by ${blogObject.author}`
-        )
-        setTimeout(() => {
-            setNotifMessage(null)
-        }, 5000)
+        dispatch(setNotification(`A new blog '${blogObject.title}' by ${blogObject.author}`, 5))
     }
 
     return (
         <div>
             <h1>Blogs app</h1>
 
-            <Notification message={notifMessage} type={messageType}/>
-
+            <Notification />
             {user === null ?
                 <Toggleable buttonLabel='log in'>
                     <LoginForm

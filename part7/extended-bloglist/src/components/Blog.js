@@ -1,68 +1,30 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { vote, removeBlog } from '../reducers/blogReducer'
+import {  useDispatch, useSelector } from 'react-redux'
+import {  useParams } from 'react-router-dom'
+import { vote } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
-import { useState } from 'react'
-import Toggleable from './Toggleable'
-
-
-const Blog = ( { blog, user } ) => {
+const Blog = () => {
     const dispatch = useDispatch()
+    const { id } = useParams()
+    const blog = useSelector((state) => state.blogs.find((u) => u.id === id))
 
-    const [removeVisible, setRemoveVisible] = useState(false)
-
-    const hideWhenNotOwned = { display: removeVisible ? 'none' : '' }
+    if (!blog) {
+        return null
+    }
 
     const increaseLikes = () => {
         dispatch(vote(blog.id))
         dispatch(setNotification(`You voted for '${blog.title}'`, 5))
     }
 
-    const remove = async event => {
-
-        event.preventDefault()
-        if (window.confirm(`remove blog ${blog.title}) by ${blog.author}`)) {
-            dispatch(removeBlog(blog.id))
-            dispatch(setNotification(`You deleted '${blog.title}'`, 5))
-        }
-        window.location.reload()
-    }
-
-    const rules = () => {
-        if (blog.user.username !== user.username) {
-            setRemoveVisible(true)
-        }
-    }
-
-    return(
-        <div className="blog" onClick={rules}>
-            {blog.title} <strong>Autor: </strong>{blog.author}
-            <Toggleable buttonLabel='view'>
-                Url: {blog.url} <br></br>
-
-                Likes: {blog.likes} <button id="like-button" onClick={increaseLikes}>Like</button><br></br>
-
-                Username: {blog.user.name} <br></br>
-                <button style={hideWhenNotOwned} onClick={remove}>Remove</button>
-            </Toggleable>
-        </div>
-    )
-}
-
-const Blogs = ({ user }) => {
-    const blogs = useSelector(state => {
-        return state.blogs.filter(blog => blog.title.includes(state.filter))
-    })
-
-    return(
+    return (
         <div>
-            <h2>Blogs</h2>
-            {blogs.sort((b1, b2) => b2.likes - b1.likes).map(blog =>
-                <Blog key={blog.id} blog={blog} user={user} />
-            )}
+            <h2>{blog.title}</h2>
+            <p>{blog.url}</p>
+            <p>{blog.likes} likes<button id="like-button" onClick={increaseLikes}>Like</button></p>
+            <p>Added by {blog.author}</p>
         </div>
     )
 }
 
-
-export default Blogs
+export default Blog

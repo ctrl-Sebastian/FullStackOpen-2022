@@ -24,8 +24,7 @@ const blogSlice = createSlice({
         },
         removeBlog(state, action) {
             const id = action.payload
-            console.log(JSON.parse(JSON.stringify(state)))
-            blogService.remove(id)
+            return state.filter((blog) => blog.id !== id)
         },
         appendBlog(state, action) {
             state.push(action.payload)
@@ -50,6 +49,17 @@ export const createBlog = newBlog => {
     return async dispatch => {
         const Newblog = await blogService.create(newBlog)
         dispatch(appendBlog(Newblog))
+    }
+}
+
+export const deleteBlog = (blog) => {
+    return async (dispatch) => {
+        try {
+            await blogService.remove(blog.id)
+            dispatch(removeBlog(blog.id))
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
 

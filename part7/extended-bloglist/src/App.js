@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 
-import Filter from './components/Filter'
-import Blogs from './components/Blog'
-import LoginForm from './components/Login'
-import BlogForm from './components/BlogForm'
-import Toggleable from './components/Toggleable'
+import { Routes, Route } from 'react-router-dom'
+
+import Blogs from './components/Blogs'
+import Blog from './components/Blog'
+import Users from './components/Users'
+import User from './components/User'
+import Login from './components/Login'
 import Notification from './components/Notification'
+import Navbar from './components/Navbar'
 
 import userService from './services/users'
 
@@ -13,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { login } from './reducers/loginReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/userReducer'
-import { logUserOut } from './reducers/loginReducer'
+
 
 const App = () => {
     const dispatch = useDispatch()
@@ -31,39 +34,18 @@ const App = () => {
         dispatch(initializeBlogs())
     }, [dispatch])
 
-    const blogFormRef = useRef()
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-
-    const handleLogout = async () => {
-        dispatch(logUserOut())
-    }
-
     return (
         <div>
             <h1>Blogs app</h1>
-
+            <Navbar />
             <Notification />
-            <Filter />
-            {user === null ?
-                <Toggleable buttonLabel='log in'>
-                    <LoginForm
-                        username={username}
-                        password={password}
-                        handleUsernameChange={({ target }) => setUsername(target.value)}
-                        handlePasswordChange={({ target }) => setPassword(target.value)}
-                    />
-                </Toggleable> :
-                <div>
-                    <p>{user.name} logged in<button onClick={handleLogout}>log out</button></p>
-
-                    <Toggleable buttonLabel="new blog" ref={blogFormRef}>
-                        <BlogForm />
-                    </Toggleable>
-
-                </div>
-            }
-            <Blogs user={ user }/>
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Blogs user={ user }/>} />
+                <Route path="/blogs/:id" element={<Blog />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/users/:id" element={<User />} />
+            </Routes>
         </div>
     )
 }

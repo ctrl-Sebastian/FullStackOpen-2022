@@ -22,11 +22,3 @@ font-style: italic;
     padding: 10px;
     margin-bottom: 10px;
 }
-
-.blog{
-    margin-bottom: 10px;
-    padding: 5px;
-    border-style: double;
-    border-radius: 15px;
-    box-shadow: 5px 5px 5px rgb(32, 32, 32);
-}

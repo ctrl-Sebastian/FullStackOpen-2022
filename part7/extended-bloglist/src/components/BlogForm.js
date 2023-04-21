@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
-
+import { Form, Button } from 'react-bootstrap'
 const BlogForm = () => {
     const dispatch = useDispatch()
 
@@ -39,30 +39,35 @@ const BlogForm = () => {
         <div>
             <h2>Create a new blog</h2>
 
-            <form onSubmit={addBlog}>
-                Title: <input
-                    id="title"
-                    value={newTitle}
-                    onChange={handleTitleChange}
-                    placeholder="Title"
-                />
+            <Form onSubmit={addBlog}>
+                <Form.Group>
+                    <Form.Label>Title:</Form.Label>
+                    <Form.Control
+                        id="title"
+                        value={newTitle}
+                        onChange={handleTitleChange}
+                        placeholder="Title"
+                    />
 
-                Author: <input
-                    id="author"
-                    value={newAuthor}
-                    onChange={handleAuthorChange}
-                    placeholder="Author"
-                />
+                    <Form.Label>Author:</Form.Label>
+                    <Form.Control
+                        id="author"
+                        value={newAuthor}
+                        onChange={handleAuthorChange}
+                        placeholder="Author"
+                    />
 
-                Url: <input
-                    id="url"
-                    value={newUrl}
-                    onChange={handleUrlChange}
-                    placeholder="Url"
-                />
+                    <Form.Label>Url:</Form.Label>
+                    <Form.Control
+                        id="url"
+                        value={newUrl}
+                        onChange={handleUrlChange}
+                        placeholder="Url"
+                    />
 
-                <button type="submit">save</button>
-            </form>
+                    <Button variant="primary" type="submit">Save</Button>
+                </Form.Group>
+            </Form>
         </div>
     )
 }

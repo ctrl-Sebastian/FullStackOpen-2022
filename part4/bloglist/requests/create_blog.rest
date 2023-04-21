@@ -1,9 +1,9 @@
 POST http://localhost:3003/api/blogs
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNhbGliYW4iLCJpZCI6IjYzZjgyYmE1ZGNlNmFlOTUwNDVlZGJhNyIsImlhdCI6MTY3NzUxNjc4MiwiZXhwIjoxNjc3NTIwMzgyfQ.yVc-oD9YO01uuni4gFPp8AVCl3iNTdHRfwczvMqT_wc
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNhbGliYW4iLCJpZCI6IjYzZjgyYmE1ZGNlNmFlOTUwNDVlZGJhNyIsImlhdCI6MTY4MjA5NTU4MywiZXhwIjoxNjgyMDk5MTgzfQ.QX_x_SwUM6hXUh5qyVLpviRr2IMpIY5fPtLoE-sUbro
 Content-Type: application/json
 
 {
-    "title": "Prueba del error del frontend",
+    "title": "Comments?",
     "author": "Sebastian Marrera",
-    "url": "example-url"
+    "url": "example-url.com"
 }

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-
 import { Routes, Route } from 'react-router-dom'
 
 import Blogs from './components/Blogs'
@@ -8,7 +7,7 @@ import Users from './components/Users'
 import User from './components/User'
 import Login from './components/Login'
 import Notification from './components/Notification'
-import Navbar from './components/Navbar'
+import NavBar from './components/Navbar'
 
 import userService from './services/users'
 
@@ -35,9 +34,9 @@ const App = () => {
     }, [dispatch])
 
     return (
-        <div>
+        <div className="container">
             <h1>Blogs app</h1>
-            <Navbar />
+            <NavBar />
             <Notification />
             <Routes>
                 <Route path="/login" element={<Login />} />

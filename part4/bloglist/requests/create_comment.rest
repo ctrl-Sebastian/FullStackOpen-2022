@@ -1,0 +1,6 @@
+POST http://localhost:3003/api/blogs/6442bdf3ae3ed971c80fbba2/comments
+Content-Type: application/json
+
+{
+    "comment": "Follow me on instagram @seb.devs"  
+}

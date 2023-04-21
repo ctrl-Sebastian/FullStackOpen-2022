@@ -4,6 +4,8 @@ import { logUserIn } from '../reducers/loginReducer'
 
 import { useNavigate } from 'react-router-dom'
 
+import { Form, Button } from 'react-bootstrap'
+
 const LoginForm = ({
     handleUsernameChange,
     handlePasswordChange,
@@ -27,26 +29,25 @@ const LoginForm = ({
         <div>
             <h2>Log in</h2>
 
-            <form onSubmit={handleLogin}>
-                <div>
-                username
-                    <input
+            <Form onSubmit={handleLogin}>
+                <Form.Group>
+                    <Form.Label>username:</Form.Label>
+                    <Form.Control
                         id="username"
                         value={username}
                         onChange={handleUsernameChange}
                     />
-                </div>
-                <div>
-                password
-                    <input
-                        id="password"
+
+                    <Form.Label>password:</Form.Label>
+                    <Form.Control
                         type="password"
                         value={password}
                         onChange={handlePasswordChange}
                     />
-                </div>
-                <button id="login-button" type="submit">login</button>
-            </form>
+
+                    <Button variant="primary" type="submit">login</Button>
+                </Form.Group>
+            </Form>
         </div>
     )
 }

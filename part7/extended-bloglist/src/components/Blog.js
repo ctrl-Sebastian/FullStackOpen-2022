@@ -1,19 +1,22 @@
+import { useDispatch } from 'react-redux'
+import { vote } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
+
 import { useState } from 'react'
 import Toggleable from './Toggleable'
 import blogService from '../services/blogs'
 
 
 const Blog = ( { blog, user } ) => {
+    const dispatch = useDispatch()
+
     const [removeVisible, setRemoveVisible] = useState(false)
 
     const hideWhenNotOwned = { display: removeVisible ? 'none' : '' }
 
-    const increaseLikes = async event => {
-        event.preventDefault()
-        const likes = blog.likes + 1
-        const newBlog = { ...blog, likes }
-        await blogService.update(blog.id, newBlog)
-        window.location.reload()
+    const increaseLikes = () => {
+        dispatch(vote(blog.id))
+        dispatch(setNotification(`You voted for '${blog.content}'`, 5))
     }
 
     const remove = async event => {

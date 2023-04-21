@@ -9,6 +9,7 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+import { initializeBlogs } from './reducers/blogReducer'
 import { useDispatch } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
 
@@ -27,6 +28,10 @@ const App = () => {
             setBlogs( blogs )
         )
     }, [])
+
+    useEffect(() => {
+        dispatch(initializeBlogs())
+    }, [dispatch])
 
     useEffect(() => {
         const loggedUserJSON = window.localStorage.getItem('loggedBlogsappUser')

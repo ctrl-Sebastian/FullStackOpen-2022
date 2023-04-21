@@ -3,48 +3,49 @@ import blogService from '../services/blogs'
 
 const initialState = []
 
-const anecdoteSlice = createSlice({
-    name: 'anecdotes',
+const blogSlice = createSlice({
+    name: 'blogs',
     initialState,
     reducers: {
         vote(state, action) {
             const id = action.payload
-            const anecdoteToChange = state.find(n => n.id === id)
-            const changedAnecdote = { 
-                ...anecdoteToChange, 
-                votes: anecdoteToChange.votes + 1 
+            const blogToChange = state.find(n => n.id === id)
+            const changedBlog = {
+                ...blogToChange,
+                votes: blogToChange.votes + 1
             }
 
             console.log(JSON.parse(JSON.stringify(state)))
-            anecdoteService.updateAnecdote(id, changedAnecdote)
+            blogService.updateblog(id, changedBlog)
 
-            return state.map(anecdote =>
-                anecdote.id !== id ? anecdote : changedAnecdote
+            return state.map(blog =>
+                blog.id !== id ? blog : changedBlog
             )
         },
-        appendAnecdote(state, action) {
+        appendBlog(state, action) {
             state.push(action.payload)
         },
-        setAnecdotes(state, action) {
+        setBlogs(state, action) {
             return action.payload
         }
     }
 })
 
-export const { vote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+export const { vote, appendBlog, setBlogs } = blogSlice.actions
 
-export const initializeAnecdotes = () => {
+export const initializeBlogs = () => {
     return async dispatch => {
-        const notes = await anecdoteService.getAll()
-        dispatch(setAnecdotes(notes))
+        const blogs = await blogService.getAll()
+        dispatch(setBlogs(blogs))
     }
 }
 
-export const createAnecdote = content => {
+
+export const createBlog = content => {
     return async dispatch => {
-        const NewAnecdote = await anecdoteService.createNew(content)
-        dispatch(appendAnecdote(NewAnecdote))
+        const Newblog = await blogService.create(content)
+        dispatch(appendBlog(Newblog))
     }
 }
 
-export default anecdoteSlice.reducer
+export default blogSlice.reducer

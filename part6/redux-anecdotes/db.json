@@ -2,7 +2,7 @@
   "anecdotes": [
     {
       "content": "the app state is in redux store",
-      "votes": 10,
+      "votes": 11,
       "id": 1
     },
     {
@@ -12,8 +12,18 @@
     },
     {
       "content": "klk",
-      "votes": 1,
+      "votes": 3,
       "id": 3
+    },
+    {
+      "content": "aqui",
+      "votes": 4,
+      "id": 4
+    },
+    {
+      "content": "tranquilometro mi locomotora",
+      "votes": 0,
+      "id": 5
     }
   ]
 }

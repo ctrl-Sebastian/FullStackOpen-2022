@@ -1,10 +1,9 @@
-import { useDispatch } from 'react-redux'
-import { vote } from '../reducers/blogReducer'
+import { useDispatch, useSelector } from 'react-redux'
+import { vote, removeBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 import { useState } from 'react'
 import Toggleable from './Toggleable'
-import blogService from '../services/blogs'
 
 
 const Blog = ( { blog, user } ) => {
@@ -16,14 +15,15 @@ const Blog = ( { blog, user } ) => {
 
     const increaseLikes = () => {
         dispatch(vote(blog.id))
-        dispatch(setNotification(`You voted for '${blog.content}'`, 5))
+        dispatch(setNotification(`You voted for '${blog.title}'`, 5))
     }
 
     const remove = async event => {
-        event.preventDefault()
 
+        event.preventDefault()
         if (window.confirm(`remove blog ${blog.title}) by ${blog.author}`)) {
-            await blogService.remove(blog.id, user.token)
+            dispatch(removeBlog(blog.id))
+            dispatch(setNotification(`You deleted '${blog.title}'`, 5))
         }
         window.location.reload()
     }
@@ -36,7 +36,7 @@ const Blog = ( { blog, user } ) => {
 
     return(
         <div className="blog" onClick={rules}>
-            {blog.title} {blog.author}
+            {blog.title} <strong>Autor: </strong>{blog.author}
             <Toggleable buttonLabel='view'>
                 Url: {blog.url} <br></br>
 
@@ -49,4 +49,20 @@ const Blog = ( { blog, user } ) => {
     )
 }
 
-export default Blog
+const Blogs = ({ user }) => {
+    const blogs = useSelector(state => {
+        return state.blogs.filter(blog => blog.title.includes(state.filter))
+    })
+
+    return(
+        <div>
+            <h2>Blogs</h2>
+            {blogs.sort((b1, b2) => b2.likes - b1.likes).map(blog =>
+                <Blog key={blog.id} blog={blog} user={user} />
+            )}
+        </div>
+    )
+}
+
+
+export default Blogs

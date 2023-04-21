@@ -12,15 +12,20 @@ const blogSlice = createSlice({
             const blogToChange = state.find(n => n.id === id)
             const changedBlog = {
                 ...blogToChange,
-                votes: blogToChange.votes + 1
+                likes: blogToChange.likes + 1
             }
 
             console.log(JSON.parse(JSON.stringify(state)))
-            blogService.updateblog(id, changedBlog)
+            blogService.update(id, changedBlog)
 
             return state.map(blog =>
                 blog.id !== id ? blog : changedBlog
             )
+        },
+        removeBlog(state, action) {
+            const id = action.payload
+            console.log(JSON.parse(JSON.stringify(state)))
+            blogService.remove(id)
         },
         appendBlog(state, action) {
             state.push(action.payload)
@@ -31,7 +36,7 @@ const blogSlice = createSlice({
     }
 })
 
-export const { vote, appendBlog, setBlogs } = blogSlice.actions
+export const { vote, removeBlog, appendBlog, setBlogs } = blogSlice.actions
 
 export const initializeBlogs = () => {
     return async dispatch => {
@@ -41,9 +46,9 @@ export const initializeBlogs = () => {
 }
 
 
-export const createBlog = content => {
+export const createBlog = newBlog => {
     return async dispatch => {
-        const Newblog = await blogService.create(content)
+        const Newblog = await blogService.create(newBlog)
         dispatch(appendBlog(Newblog))
     }
 }

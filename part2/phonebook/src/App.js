@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import personService from './components/persons'
+import personService from './services/persons'
 import axios from 'axios'
 
 const Person = ({ person, removePerson }) => {

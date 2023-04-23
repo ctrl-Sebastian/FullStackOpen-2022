@@ -48,7 +48,7 @@ const Authors = () => {
       <table>
         <tbody>
           <tr>
-            <th></th>
+            <th>name</th>
             <th>born</th>
             <th>books</th>
           </tr>
@@ -65,14 +65,12 @@ const Authors = () => {
         <hr></hr>
 
         <h2>Set birthyear</h2>
-      <form onSubmit={handleBornChange}>
-      <div>
-          name
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
-        </div>
+        <form onSubmit={handleBornChange}>
+        <select onChange={({ target }) => setName(target.value)}>
+          {result.data.allAuthors.map((a) => (
+            <option key={a.name} value={a.name}>{a.name}</option>
+          ))}
+        </select>
 
         <div>
           set born to:

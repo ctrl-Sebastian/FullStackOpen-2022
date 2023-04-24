@@ -144,7 +144,7 @@ const typeDefs = `
     addBook(
       title: String!
       published: Int!
-      author: AuthorInput!
+      author: String
       genres: [String!]!
     ): Book!
 
@@ -206,7 +206,7 @@ const resolvers = {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser
       const foundBook = await Book.findOne({ title: args.title })
-      const foundAuthor = await Author.findOne({ name: args.author.name })
+      const foundAuthor = await Author.findOne({ name: args.author })
 
       if (!currentUser) {
         throw new UserInputError('Not authenticated', {
@@ -221,7 +221,7 @@ const resolvers = {
       }
 
       if (!foundAuthor) {
-        const author = new Author({ ...args.author })
+        const author = new Author({ name: args.author, bookCount: 1 })
         try {
           await author.save()
         } catch (error) {
@@ -230,9 +230,12 @@ const resolvers = {
           })
         }
       }
-
-      const foundAuthor2 = await Author.findOne({ name: args.author.name })
-      const book = new Book({ ...args, author: foundAuthor2 })
+      let book = new Book({
+        title: args.title,
+        published: args.published,
+        genres: args.genres,
+        author: foundAuthor
+      })
 
       try {
         await book.save()
@@ -258,9 +261,17 @@ const resolvers = {
         return null
       }
       
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      await Author.updateOne({ name: args.name}, {$set: updatedAuthor})
-      return await Author.findOne({ name: args.name })
+      author.born = args.setBornTo
+
+      try {
+        await author.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+
+      return author
     },
 
     createUser: async (root, args) => {

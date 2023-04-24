@@ -1,13 +1,60 @@
+import React, { useState } from 'react'
+import { useApolloClient } from '@apollo/client'
+
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import LoginForm from './components/LoginForm'
+import Recommended from './components/Recommended'
 
 import {
   BrowserRouter as Router,
   Routes, Route, Link
 } from 'react-router-dom'
 
+const Notify = ({errorMessage}) => {  
+  if ( !errorMessage ) {    
+    return null  
+  }  
+  return (    
+    <div style={{color: 'red'}}>    
+    {errorMessage}    
+    </div>  
+    )
+}
+
 const App = () => {
+  const [token, setToken] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  const client = useApolloClient()
+
+  const notify = (message) => {    
+    setErrorMessage(message)    
+    setTimeout(() => {      
+      setErrorMessage(null)    
+    }, 10000)  
+  }
+
+  const logout = () => {    
+    setToken(null)    
+    localStorage.clear()    
+    client.resetStore()  
+  }
+
+  if (!token) {
+    return (
+      <div>
+        <Notify errorMessage={errorMessage} />
+        <h2>Login</h2>
+        <LoginForm
+          setToken={setToken}
+          setError={notify}
+        />
+      </div>
+    )
+  }
+
+  
   const padding = {
     padding: 5
   }
@@ -18,13 +65,18 @@ const App = () => {
         <div>
           <Link style={padding} to="/authors">authors</Link>
           <Link style={padding} to="/books">books</Link>
+          <Link style={padding} to="/recommended">recommended</Link>
           <Link style={padding} to="/add">add book</Link>
+          <Link style={padding} to="/login">log in</Link>
+          <button onClick={logout}>Log out</button>
         </div>
 
         <Routes>
-          <Route path="/authors" element={<Authors />} />
+          <Route path="/authors" element={<Authors notify={notify}/>} />
           <Route path="/books" element={<Books />} />
-          <Route path="/add" element={<NewBook />} />
+          <Route path="/recommended" element={<Recommended />} />
+          <Route path="/add" element={<NewBook notify={notify}/>} />
+          <Route path="/login" element={<LoginForm setToken={setToken} setError={notify}/>} />
         </Routes>
       </div>
     </Router>

@@ -1,46 +1,42 @@
-import { useState } from 'react'
-import { gql, useQuery, useMutation } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import Select from 'react-select';
+import { useQuery, useMutation } from '@apollo/client'
+import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors { 
-      name
-      born
-      bookCount
-    }
-  }
-`
-const EDIT_AUTHOR = gql`
-  mutation changeBorn($name: String, $born: Int!) {
-    editAuthor(
-      name: $name,
-      setBornTo: $born
-    ) {
-      name
-      born
-    }
-  }
-`
 
-const Authors = () => {
-  const [name, setName] = useState('')
+const Authors = ({ notify }) => {
   const [born, setBorn] = useState('')
+  const [selectedOption, setSelectedOption] = useState(null)
 
   const result = useQuery(ALL_AUTHORS)
-  const [ changeBorn ] = useMutation(EDIT_AUTHOR)
+  const [ changeBorn ] = useMutation(EDIT_AUTHOR, {
+    refetchQueries: [ 
+        { query: ALL_AUTHORS } 
+      ]
+  })
 
   const handleBornChange = async (event) => {
     event.preventDefault()
-
+    const name = selectedOption.value
     changeBorn({  variables: { name, born } })
 
-    setName('')
     setBorn('')
   }
+
+  useEffect(() => {    
+      if (result.data && result.data.editAuthor === null) {      
+          notify('Author not found')    
+        }  
+    }, [result.data])  // eslint-disable-line 
 
   if (result.loading) {
     return <div>loading...</div>
   }
+  
+  const authors = result.data.allAuthors
+  const selectAuthorOptions = authors.map((author) => (
+    { value: author.name, label: author.name }
+  ))
 
   return (
     <div>
@@ -66,22 +62,23 @@ const Authors = () => {
 
         <h2>Set birthyear</h2>
         <form onSubmit={handleBornChange}>
-        <select onChange={({ target }) => setName(target.value)}>
-          {result.data.allAuthors.map((a) => (
-            <option key={a.name} value={a.name}>{a.name}</option>
-          ))}
-        </select>
-
-        <div>
-          set born to:
-          <input
-            type="number"
-            value={born}
-            onChange={({ target }) => setBorn(Number(target.value))}
-          />
-        </div>
-
-        <button type="submit">update author</button>
+          <div>
+            Author
+            <Select
+              defaultValue={selectedOption}
+              onChange={setSelectedOption}
+              options={selectAuthorOptions}
+            />
+          </div>
+          <div>
+            Born
+            <input
+              type='number'
+              value={born}
+              onChange={ ({ target }) => setBorn(parseInt(target.value)) }
+            />
+          </div>
+          <button type='submit'>change</button>
       </form>
       
     </div>

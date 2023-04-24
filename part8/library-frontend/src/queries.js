@@ -18,13 +18,13 @@ export const USER = gql`
 
 export const ALL_BOOKS = gql`
   query {
-    allBooks { 
+    allBooks {
       title 
+      published
+      genres
       author {
         name
       }
-      published
-      genres
     }
   }
 `
@@ -75,4 +75,24 @@ export const CREATE_BOOK = gql`
       }
     }
   }
+`
+
+const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    title 
+    published
+    genres
+    author {
+      name
+    }
+  }
+`
+
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+${BOOK_DETAILS}
 `

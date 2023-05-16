@@ -1,14 +1,14 @@
-interface Result {
-  periodLength: number;
-  trainingDays: number;
-  success: boolean;
-  rating: number;
-  ratingDescription: string;
-  target: number;
-  average: number;
-}
+  interface Result {
+    periodLength: number;
+    trainingDays: number;
+    success: boolean;
+    rating: number | undefined;
+    ratingDescription: string | undefined;
+    target: number;
+    average: number;
+  }
 
-const calculateExercises = (target: number, array: number[]): Result => {
+export const calculateExercises = (target: number, array: number[]): Result => {
   const periodLength = array.length;
 
   const trainingDays = array.filter((exerciseHour) => exerciseHour > 0).length;
@@ -46,7 +46,7 @@ interface ParsedExerciseArgs {
   dailyHours: number[];
 }
 
-const parseArguments = (args: Array<string>): ParsedExerciseArgs => {
+export const parseArguments = (args: Array<string>): ParsedExerciseArgs => {
   if (args.length < 4) throw new Error("Not enough arguments");
 
   const target = Number(args[2]);
@@ -72,7 +72,7 @@ try {
 } catch (e) {
   console.log("An error has occured:", e.message);
   console.log(
-    "USAGE: npm run calculateExercises target(hrs) dailyHours(hrs)[]"
+    "USAGE: npm run exer target(hrs) dailyHours(hrs)[]"
   );
   console.log("dailyHours is space separated hours exercised per day");
 }

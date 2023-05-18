@@ -22,7 +22,7 @@ export const calculateExercises = (target: number, array: number[]): Result => {
 
   if (average < target) {
     rating = 1;
-    ratingDescription = `not too bad but could be better`;
+    ratingDescription = `bad`;
   } else if (target === average) {
     rating = 2;
     ratingDescription = `Well done, you made it!`;
@@ -45,8 +45,7 @@ interface ParsedExerciseArgs {
   target: number;
   dailyHours: number[];
 }
-
-export const parseArguments = (args: Array<string>): ParsedExerciseArgs => {
+const parseArguments = (args: Array<string>): ParsedExerciseArgs => {
   if (args.length < 4) throw new Error("Not enough arguments");
 
   const target = Number(args[2]);
@@ -64,6 +63,17 @@ export const parseArguments = (args: Array<string>): ParsedExerciseArgs => {
   }
 
   return { target, dailyHours };
+};
+
+export const parseExerciseArguments = ( target: number, dailyHours: Array<number> ): ParsedExerciseArgs => {
+  if (!isNaN(target) && !dailyHours.some(isNaN)) {
+    return {
+      target: target,
+      dailyHours: dailyHours
+    };
+  } else {
+    throw new Error('Provided values were not numbers!');
+  }
 };
 
 try {

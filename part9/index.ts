@@ -1,5 +1,5 @@
 import { calculateBmi } from './bmiCalculator';
-import { calculateExercises } from './exerciseCalculator';
+import { calculateExercises, parseExerciseArguments } from './exerciseCalculator';
 import express from 'express';
 
 const app = express();
@@ -22,7 +22,7 @@ app.get('/bmi', (_req, res) => {
     try {
 
       if(isNaN(Number(height)) || isNaN(Number(weight))){
-        throw new Error('malformatted parametersmalformatted parameters');
+        throw new Error('malformatted parameters');
       }
       const bmi = calculateBmi(Number(height), Number(weight));
       
@@ -39,14 +39,15 @@ app.get('/bmi', (_req, res) => {
 });
 
 app.post('/exercises', (req, res) => {
-  const dailyHours = req.body.daily_exercises;
-  const target = req.body.target;
+  const vDailyHours = req.body.daily_exercises;
+  const vTarget = req.body.target;
 
-  if (!dailyHours || !target) {
+  if (!vDailyHours || !vTarget) {
     res.status(400);
     res.send({ error: 'missing parameter daily_exercises or target' });
   } else {
     try {
+      const { target, dailyHours } = parseExerciseArguments(vTarget, vDailyHours)
       res.send(calculateExercises(target, dailyHours));
     } catch (e) {
       res.status(400);

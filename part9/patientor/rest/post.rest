@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients HTTP/1.1
+
+{
+  "id": "d27455336-f453-15e9-4f0b-362b9e155667",
+  "name": "Kaleb Roniel",
+  "occupation": "Programmer",
+  "gender": "male",
+  "ssn": "100897-223X",
+  "dateOfBirth": "2004-10-08"
+}
